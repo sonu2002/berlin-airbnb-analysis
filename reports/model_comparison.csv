@@ -1,0 +1,5 @@
+model,cv_r2_log,test_r2_log,test_mae_eur,test_median_ae_eur
+Baseline (median),-0.001,-0.0,78.6,54.2
+Ridge regression,0.617,0.617,50.6,29.4
+Random forest,0.65,0.649,47.7,27.5
+Gradient boosting,0.661,0.662,47.0,27.1

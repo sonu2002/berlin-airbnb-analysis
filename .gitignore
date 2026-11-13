@@ -1,0 +1,8 @@
+# Raw data is downloaded with `python src/download_data.py`
+data/raw/
+data/processed/*.db
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.env
+.DS_Store

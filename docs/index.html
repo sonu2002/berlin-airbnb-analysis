@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Berlin Airbnb Market Dashboard · Sonu Phogat</title>
+  <meta name="description" content="Interactive analysis of 8,000+ Berlin Airbnb listings: prices by neighbourhood, host concentration, short-term rental registration and an ML price estimator." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Data analysis · Machine learning · Berlin</p>
+      <h1>Berlin Airbnb Market Dashboard</h1>
+      <p class="lead">What drives the price of a night in Berlin? An analysis of <strong id="k-listings-inline">8,000+</strong> active listings from the Inside Airbnb snapshot of <span id="snapshot">September 2026</span>.</p>
+      <div class="kpis" id="kpis"></div>
+    </div>
+  </header>
+
+  <nav class="tabs wrap">
+    <a href="#map">Map</a><a href="#districts">Districts</a><a href="#market">Market</a><a href="#regulation">Regulation</a><a href="#estimator">Price estimator</a><a href="#model">Model</a>
+  </nav>
+
+  <main class="wrap">
+    <section id="map" class="card">
+      <div class="card-head">
+        <h2>Median nightly price by neighbourhood</h2>
+        <p>Hover a neighbourhood. Grey = fewer than 5 priced listings.</p>
+      </div>
+      <div class="map-layout">
+        <div class="map-box"><svg id="map-svg" role="img" aria-label="Map of Berlin neighbourhoods coloured by median price"></svg><div id="tooltip" class="tooltip"></div></div>
+        <div class="map-side">
+          <div id="legend"></div>
+          <h3>Most expensive neighbourhoods</h3>
+          <ol id="top-hoods" class="rank"></ol>
+          <h3>Most affordable</h3>
+          <ol id="low-hoods" class="rank"></ol>
+        </div>
+      </div>
+    </section>
+
+    <section id="districts" class="card">
+      <div class="card-head row">
+        <div><h2>District comparison</h2><p>All 12 Berlin districts (Bezirke).</p></div>
+        <div class="seg" id="district-metric">
+          <button data-m="median_price" class="on">Median price</button>
+          <button data-m="listings">Listings</button>
+          <button data-m="avg_booked_nights">Booked nights / yr</button>
+          <button data-m="pct_entire">% entire homes</button>
+        </div>
+      </div>
+      <div id="district-chart" class="bars"></div>
+    </section>
+
+    <div class="grid2" id="market">
+      <section class="card">
+        <div class="card-head"><h2>Price distribution</h2><p>Nightly price, € (capped at €500)</p></div>
+        <div id="hist"></div>
+      </section>
+      <section class="card">
+        <div class="card-head"><h2>Room types</h2><p>Share of listings and median price</p></div>
+        <div id="rooms"></div>
+      </section>
+    </div>
+
+    <section id="regulation" class="card">
+      <div class="card-head">
+        <h2>Short-term rental regulation</h2>
+        <p>In Berlin, renting out a home for fewer than 30 nights requires a registration number (<em>Zweckentfremdungsverbot</em>). Hosts operating as businesses must disclose their details instead. How do the listings comply?</p>
+      </div>
+      <div id="licence"></div>
+      <p class="insight" id="licence-insight"></p>
+    </section>
+
+    <section id="estimator" class="card accent">
+      <div class="card-head">
+        <h2>🔮 What should my listing cost per night?</h2>
+        <p>This runs the trained gradient-boosting model <strong>directly in your browser</strong> (300 decision trees exported from scikit-learn).</p>
+      </div>
+      <div class="estimator">
+        <form id="est-form" class="form">
+          <label>District<select name="district"></select></label>
+          <label>Room type<select name="room_type"></select></label>
+          <label>Guests <output id="o-acc">2</output><input type="range" name="accommodates" min="1" max="12" value="2" /></label>
+          <label>Bedrooms <output id="o-bed">1</output><input type="range" name="bedrooms" min="0" max="6" value="1" /></label>
+          <label>Bathrooms <output id="o-bath">1</output><input type="range" name="bathrooms" min="0.5" max="4" step="0.5" value="1" /></label>
+          <label>Minimum stay (nights) <output id="o-min">2</output><input type="range" name="minimum_nights" min="1" max="90" value="2" /></label>
+          <label>Amenities listed <output id="o-am">30</output><input type="range" name="amenities_count" min="5" max="80" value="30" /></label>
+          <label>Review score <output id="o-rev">4.8</output><input type="range" name="review_score" min="3" max="5" step="0.05" value="4.8" /></label>
+          <label class="check"><input type="checkbox" name="shared_bath" /> Shared bathroom</label>
+          <label class="check"><input type="checkbox" name="superhost" /> Superhost</label>
+        </form>
+        <div class="result">
+          <p class="muted">Estimated price per night</p>
+          <p class="price" id="est-price">€–</p>
+          <p class="muted" id="est-range"></p>
+          <p class="small" id="est-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="model" class="card">
+      <div class="card-head"><h2>How good is the model?</h2><p>Trained on 80% of listings, evaluated on the remaining 20%. The target is log(price).</p></div>
+      <div class="grid2 inner">
+        <div><table class="table" id="model-table"></table></div>
+        <div><h3>What drives the price? (permutation importance)</h3><div id="importance"></div></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <p>Built by <a href="https://github.com/sonu2002">Sonu Phogat</a> · Data: <a href="https://insideairbnb.com/get-the-data/">Inside Airbnb</a> (CC BY 4.0) · Code: <a href="https://github.com/sonu2002/berlin-airbnb-analysis">github.com/sonu2002/berlin-airbnb-analysis</a></p>
+  </footer>
+
+  <script src="predict.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
